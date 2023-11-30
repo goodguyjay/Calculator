@@ -11,8 +11,13 @@ int main() {
     char operation;
     double result, num1, num2;
 
-    std::cout << "Hey there! Type in a operation: " << std::endl;
+    std::cout << "Hey there! Type in a operation: \n[+]Addition\n[-]Subtraction\n[*]Multiplication\n[/]Division\n" << std::endl;
     std::cin >> operation;
+
+    /*try {
+        std::cin >> operation;
+    } catch (const std::exception&)*/
+
     std::cout << "Type in two numbers: (separated by a space or enter)" << std::endl;
     std::cin >> num1 && std::cin >> num2;
     result = operation_chooser(operation, num1, num2);
@@ -59,7 +64,7 @@ double operation_chooser(char operation, double num1, double num2) {
         default: {
             std::cout << "Invalid operation. Please try again!" << std::endl;
             std::cin >> operation;
-            main();
+            operation_chooser(operation, num1, num2);
         }
     }
 }
