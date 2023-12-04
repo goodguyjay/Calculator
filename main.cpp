@@ -1,89 +1,88 @@
+#include <climits>
 #include <iostream>
 
-double operation_chooser(char operation, double num1, double num2);
-
-double add(double num1, double num2);
-double subtract(double num1, double num2);
-double multiply(double num1, double num2);
-double divide(double num1, double num2);
+double get_number(double* num);
+char get_operation(char* operation);
+double get_result(double* num1, double* num2, char operation);
 
 int main() {
+
+    double num1 = 0, num2 = 0;
     char operation;
-    double result, num1, num2;
 
-    std::cout << "Hey there! Type in a operation: \n[+]Addition\n[-]Subtraction\n[*]Multiplication\n[/]Division\n" << std::endl;
-    std::cin >> operation;
-
-    /*try {
-        std::cin >> operation;
-    } catch (const std::exception&)*/
-
-    std::cout << "Type in two numbers: (separated by a space or enter)" << std::endl;
-    std::cin >> num1 && std::cin >> num2;
-    result = operation_chooser(operation, num1, num2);
-    std::cout << result << std::endl;
-    /*
-    do {
-        value = operation_chooser(operation);
-        std::cout << value << std::endl;
-        std::cout << "Wanna do it again? (Type ? to stop) ;)" << std::endl;
-    } while (operation != '?');*/
+    std::cout << "Type in a number: " << std::endl;
+    get_number(&num1);
+    std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n";
+    get_operation(&operation);
+    std::cout << "Type in another number: " << std::endl;
+    get_number(&num2);
+    get_result(&num1, &num2, operation);
+    std::cout << num1 << std::endl;
 
     return 0;
 }
 
-double operation_chooser(char operation, double num1, double num2) {
-    double result = 0;
+double get_number(double* num) {
+    std::cin >> *num;
+    return *num;
+}
 
-    if (operation == '?') {
-        return operation;
+char get_operation(char* operation) {
+
+    std::cin.clear();
+    std::cin.ignore(INT_MAX, '\n');
+    std::cin.get(*operation);
+
+    switch(*operation) {
+        //case 10: for a goddamn reason the + symbol was 10 and now its 43? TODO: test this on another compiler
+        case 43:
+        case 45:
+        case 120:
+        case 42:
+        case 47:
+            return *operation;
+        default:
+            return 1;
     }
+}
+
+double get_result(double* num1, double* num2, char operation) {
 
     switch (operation) {
 
-        case '+': {
-            result = add(num1, num2);
-            break;
-        };
+        //case 10: // adição ??????
+        case 43: {
+            *num1 =  *num1 + *num2;
+            return *num1;
+        }
 
-        case '-': {
-            result = subtract(num1, num2);
-            break;
-        };
+        case 45: { // subtração
+            *num1 = *num1 - *num2;
+            return *num1;
+        }
 
-        case '*' || 'x': {
-            result = multiply(num1, num2);
-            break;
-        };
+        case 120: // multplicação e tecla x em ASCII
+        case 42: {
+            *num1 = *num1 * *num2;
+            return *num1;
+        }
 
-        case '/': {
-            result = divide(num1, num2);
-            break;
+        case 47: { // divisão
+            *num1 = *num1 / *num2;
+            return *num1;
         }
 
         default: {
-            std::cout << "Invalid operation. Please try again!" << std::endl;
-            std::cin >> operation;
-            operation_chooser(operation, num1, num2);
+
+            do {
+                std::cout << "Invalid operation. Please type the operation again!" << std::endl;
+                std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n";
+                get_operation(&operation);
+            } while (operation == 1);
+
+            get_result(num1, num2, operation);
         }
+
     }
-}
-double add(double num1, double num2) {
-    double result = num1 + num2;
-    return result;
-}
 
-double subtract(double num1, double num2) {
-    double result = num1 - num2;
-    return result;
-}
-
-double multiply(double num1, double num2) {
-    double result = num1 * num2;
-    return result;
-}
-
-double divide(double num1, double num2) {
-    double result = num1 / num2;
-    return result;
 }
