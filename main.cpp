@@ -18,12 +18,16 @@ int main() {
 
     std::cout << "Type in a number: " << std::endl;
     get_number(&num1);
-    std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n";
+
+    std::cout << "Operations available: [+] [-] [*] [/] \n";
     get_operation(&operation);
+
     std::cout << "Type in another number: " << std::endl;
     get_number(&num2);
     get_result(&num1, &num2, operation);
-    std::cout << num1 << std::endl;
+
+    std::cout << "Result: " <<
+        num1 << std::endl;
 
     std::cout << "Wanna continue? [y/n]" << std::endl;
     std::cin >> cont;
@@ -31,11 +35,16 @@ int main() {
     while (get_continue(&cont)) {
         std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n" << std::endl;
         get_operation(&operation);
+
         std::cout << "Type in another number: " << std::endl;
         get_number(&num2);
         get_result(&num1, &num2, operation);
-        std::cout << num1 << std::endl;
-        break;
+
+        std::cout << "Result: " <<
+            num1 << std::endl;
+
+        std::cout << "Wanna continue? [y/n]" << std::endl;
+        std::cin >> cont;
     }
 
     std::cout << "Thank you for using this calculator!" << std::endl;
