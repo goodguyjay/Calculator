@@ -1,50 +1,59 @@
 #include <climits>
 #include <iostream>
+#include <limits>
 
 double get_number(double *num);
 char get_operation(char *operation);
 double get_result(double *num1, double *num2, char operation);
 bool get_continue(char *cont);
+void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 
 int main() {
 
-    double num1 = 0, num2 = 0;
-    char operation = '\n';
-    char cont = '\n';
+    double num1 = 0, num2 = 0, num_temp;
+    char operation = '\0';
+    char cont = '\0';
 
     // to better simulate a calculator, the main function will ask first for a number
     // then the operation, and then the other number
     // probable to change in the near future tho
 
-    std::cout << "Type in a number: " << std::endl;
+    std::cout << "Type in a number: ";
     get_number(&num1);
+    num_temp = num1;
+    clear_screen();
+    std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
 
-    std::cout << "Operations available: [+] [-] [*] [/] \n";
-    get_operation(&operation);
+    /*do {
+        get_operation(&operation);
+    } while (!get_operation(&operation));*/
 
-    std::cout << "Type in another number: " << std::endl;
+    clear_screen();
+    std::cout << num1 << " " << operation << " (type in another number) ";
+
     get_number(&num2);
     get_result(&num1, &num2, operation);
-
-    std::cout << "Result: " <<
-        num1 << std::endl;
+    clear_screen();
+    std::cout << num_temp << " " << operation << " " << num2 << " = " << num1 << std::endl;
 
     std::cout << "Wanna continue? [y/n]" << std::endl;
     std::cin >> cont;
 
+    clear_screen();
+
     while (get_continue(&cont)) {
-        std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n" << std::endl;
+        std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
         get_operation(&operation);
 
-        std::cout << "Type in another number: " << std::endl;
+        std::cout << num1 << " " << operation << " (type in another number): ";
         get_number(&num2);
+        num_temp = num1;
         get_result(&num1, &num2, operation);
+        std::cout << num_temp << " " << operation << " " << num2 << " = " << num1 << std::endl;
 
-        std::cout << "Result: " <<
-            num1 << std::endl;
-
-        std::cout << "Wanna continue? [y/n]" << std::endl;
+        std::cout << "Do you want to continue? [y/n]" << std::endl;
         std::cin >> cont;
+        clear_screen();
     }
 
     std::cout << "Thank you for using this calculator!" << std::endl;
@@ -52,8 +61,16 @@ int main() {
 }
 
 double get_number(double *num) {
-    // ok i admit this is unecessary
+
     std::cin >> *num;
+
+    while (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits < std::streamsize>::max(), '\n');
+        std::cout << "Invalid input. Please type in a number!" << std::endl;
+        std::cin >> *num;
+    }
+
     return *num;
 }
 
@@ -75,19 +92,14 @@ char get_operation(char *operation) {
         case 47:
             return *operation;
         default:
-            return 1;
+            return false;
     }
 }
 
 double get_result(double *num1, double *num2, char operation) {
 
 
-    /* you could say its lazy reusing the same variable to return the result
-     *
-     *
-     *
-     *
-     * eh... you'd be right */
+    // i'm reusing the num1 as the result to avoid creating another unecessary variable
     switch (operation) {
 
         // 43 equals to '+'
@@ -121,7 +133,7 @@ double get_result(double *num1, double *num2, char operation) {
 
             do {
                 std::cout << "Invalid operation. Please type the operation again!" << std::endl;
-                std::cout << "Operations available: \n[+]\n[-]\n[*]\n[/]\n";
+                std::cout << "Operations available: [+] [-] [*] [/]\n";
                 get_operation(&operation);
             } while (operation == 1);
 
@@ -129,6 +141,8 @@ double get_result(double *num1, double *num2, char operation) {
         }
 
     }
+
+    return *num1;
 
 }
 
@@ -148,11 +162,15 @@ bool get_continue(char *cont) {
         default: {
                 do {
                     std::cout << "Invalid option. Please type again!" << std::endl;
-                    std::cin >> *cont;
+
+                    std::cin.clear();
+                    std::cin.ignore(INT_MAX, '\n');
+                    std::cin.get(*cont);
+
                     *cont = std::tolower(*cont);
 
                     if (*cont == 'y' || *cont == 'n') {
-                        get_continue(cont);
+                        return true;
                     }
 
                     i++;
