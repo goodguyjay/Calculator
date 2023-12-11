@@ -10,13 +10,9 @@ inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 
 int main() {
 
-    double num1 = 0, num2 = 0, num_temp;
+    double num1 = 0, num2 = 0, num_temp = 0;
     char operation = '\0';
     char cont = '\0';
-
-    // to better simulate a calculator, the main function will ask first for a number
-    // then the operation, and then the other number
-    // probable to change in the near future tho
 
     std::cout << "Type in a number: ";
     get_number(&num1);
@@ -24,10 +20,7 @@ int main() {
     clear_screen();
 
     std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
-
-    do {
-        get_operation(&operation);
-    } while (operation == 'e');
+    get_operation(&operation);
 
     clear_screen();
 
@@ -45,7 +38,8 @@ int main() {
 
     clear_screen();
 
-    while (get_continue(&cont)) {
+    get_continue(&cont);
+    while (cont) {
         std::cout << num1 << " (operations available: [+] [-] [*] [/])" << std::endl;
         get_operation(&operation);
 
@@ -104,7 +98,7 @@ char get_operation(char *operation) {
 
 }
 
-double get_result(double *num1, double *num2, char operation) {
+double get_result(double *num1, double *num2, const char operation) {
 
 
     // i'm reusing the num1 as the result to avoid creating another unecessary variable
@@ -131,16 +125,6 @@ double get_result(double *num1, double *num2, char operation) {
 
         // 47 equals to '/'
         case 47: {
-
-            /*while (*num1 == 0 || *num2 == 0) {
-                std::cout << "You can't divide by zero!" << std::endl;
-                std::cout << "Please type in the first number again: ";
-                get_number(num1);
-                std::cout << "Please type in the second number again: ";
-                get_number(num2);
-            }*/
-
-
             // if the user tries to divide 0 by anything, it will be always 0
             if (*num1 == 0) {
                 return 0;
@@ -157,19 +141,15 @@ double get_result(double *num1, double *num2, char operation) {
             return *num1;
         }
 
-        // if the op is not within the defined parameters, it will go into the default and ask the user to change
-        // until it is a valid operation
+        // i mean, really, how did you get here?
         default: {
-            // TODO: CHANGE THIS
-            do {
-                std::cout << "Invalid operation. Please type the operation again!" << std::endl;
-                std::cout << "Operations available: [+] [-] [*] [/]" << std::endl;
-                get_operation(&operation);
-            } while (operation == 1);
+            std::cout << "How... why... what... how did you get here?!" << std::endl;
+            return 1;
         }
 
     }
 
+    // right, so this part of the code is unreachable, but i'm leaving it here because some compilers require it
     return *num1;
 
 }
