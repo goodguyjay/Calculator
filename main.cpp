@@ -6,7 +6,7 @@ double get_number(double *num);
 char get_operation(char *operation);
 double get_result(double *num1, double *num2, char operation);
 bool get_continue(char *cont);
-void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
+inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 
 int main() {
 
@@ -22,18 +22,22 @@ int main() {
     get_number(&num1);
     num_temp = num1;
     clear_screen();
+
     std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
 
-    /*do {
+    do {
         get_operation(&operation);
-    } while (!get_operation(&operation));*/
+    } while (operation == 'e');
 
     clear_screen();
+
     std::cout << num1 << " " << operation << " (type in another number) ";
 
     get_number(&num2);
     get_result(&num1, &num2, operation);
+
     clear_screen();
+
     std::cout << num_temp << " " << operation << " " << num2 << " = " << num1 << std::endl;
 
     std::cout << "Wanna continue? [y/n]" << std::endl;
@@ -42,7 +46,7 @@ int main() {
     clear_screen();
 
     while (get_continue(&cont)) {
-        std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
+        std::cout << num1 << " (operations available: [+] [-] [*] [/])" << std::endl;
         get_operation(&operation);
 
         std::cout << num1 << " " << operation << " (type in another number): ";
@@ -75,25 +79,29 @@ double get_number(double *num) {
 }
 
 char get_operation(char *operation) {
-
     // to minimize code verbosity and portability, i made the operation reader a function
     // that way i can reuse it and add case exceptions without adding to the verbosity of the code itself
 
-    std::cin.clear();
-    std::cin.ignore(INT_MAX, '\n');
-    std::cin.get(*operation);
+    do {
+        std::cin.clear();
+        std::cin.ignore(INT_MAX, '\n');
+        std::cin.get(*operation);
 
-    switch(*operation) {
-        // these numbers are the equivalent to the ASCII code of the operation
-        case 43:
-        case 45:
-        case 120:
-        case 42:
-        case 47:
-            return *operation;
-        default:
-            return false;
-    }
+        switch(*operation) {
+            // these numbers are the equivalent to the ASCII code of the operation
+            case 43:
+            case 45:
+            case 120:
+            case 42:
+            case 47:
+                return *operation;
+            default:
+                *operation = 'e';
+                std::cout << "Invalid operation. Please type the operation again!" << std::endl;
+                std::cout << "Operations available: [+] [-] [*] [/]" << std::endl;
+        }
+    } while (true);
+
 }
 
 double get_result(double *num1, double *num2, char operation) {
@@ -123,6 +131,28 @@ double get_result(double *num1, double *num2, char operation) {
 
         // 47 equals to '/'
         case 47: {
+
+            /*while (*num1 == 0 || *num2 == 0) {
+                std::cout << "You can't divide by zero!" << std::endl;
+                std::cout << "Please type in the first number again: ";
+                get_number(num1);
+                std::cout << "Please type in the second number again: ";
+                get_number(num2);
+            }*/
+
+
+            // if the user tries to divide 0 by anything, it will be always 0
+            if (*num1 == 0) {
+                return 0;
+            }
+
+            // if the user tries to divide anything by 0, it will ask for the second number again
+            do {
+                std::cout << "You cant divide by zero!" << std::endl;
+                std::cout << "Please type in the second number again: ";
+                get_number(num2);
+            } while (*num2 == 0);
+
             *num1 = *num1 / *num2;
             return *num1;
         }
@@ -130,14 +160,12 @@ double get_result(double *num1, double *num2, char operation) {
         // if the op is not within the defined parameters, it will go into the default and ask the user to change
         // until it is a valid operation
         default: {
-
+            // TODO: CHANGE THIS
             do {
                 std::cout << "Invalid operation. Please type the operation again!" << std::endl;
-                std::cout << "Operations available: [+] [-] [*] [/]\n";
+                std::cout << "Operations available: [+] [-] [*] [/]" << std::endl;
                 get_operation(&operation);
             } while (operation == 1);
-
-            get_result(num1, num2, operation);
         }
 
     }
@@ -148,8 +176,7 @@ double get_result(double *num1, double *num2, char operation) {
 
 bool get_continue(char *cont) {
 
-    *cont = std::tolower(*cont);
-    short i = 0;
+    *cont = std::tolower(static_cast<unsigned char>(*cont));
 
     switch(*cont) {
 
@@ -160,14 +187,15 @@ bool get_continue(char *cont) {
             return false;
 
         default: {
-                do {
-                    std::cout << "Invalid option. Please type again!" << std::endl;
+            short i = 0;
+            do {
+                    std::cout << "Invalid option. Please try again! [y/n]" << std::endl;
 
                     std::cin.clear();
                     std::cin.ignore(INT_MAX, '\n');
                     std::cin.get(*cont);
 
-                    *cont = std::tolower(*cont);
+                    *cont = std::tolower(static_cast<unsigned char>(*cont));
 
                     if (*cont == 'y' || *cont == 'n') {
                         return true;
