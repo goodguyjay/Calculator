@@ -11,49 +11,44 @@ inline void clear_screen() { std::cout << "\x1B[2J\x1B[H"; }
 int main() {
 
     double num1 = 0, num2 = 0, num_temp = 0;
-    char operation = '\0';
     char cont = '\0';
 
     std::cout << "Type in a number: ";
     get_number(&num1);
-    num_temp = num1;
-    clear_screen();
 
-    std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
-    get_operation(&operation);
+    do {
+        clear_screen();
 
-    clear_screen();
+        // i declared this char inside the loop to clear the variable everytime it gets back to the loop
+        char operation = '\0';
 
-    std::cout << num1 << " " << operation << " (type in another number) ";
-
-    get_number(&num2);
-    get_result(&num1, &num2, operation);
-
-    clear_screen();
-
-    std::cout << num_temp << " " << operation << " " << num2 << " = " << num1 << std::endl;
-
-    std::cout << "Wanna continue? [y/n]" << std::endl;
-    std::cin >> cont;
-
-    clear_screen();
-
-    get_continue(&cont);
-    while (cont) {
-        std::cout << num1 << " (operations available: [+] [-] [*] [/])" << std::endl;
+        std::cout << num1 << " (operations available: [+] [-] [*] [/]) ";
         get_operation(&operation);
 
-        std::cout << num1 << " " << operation << " (type in another number): ";
+        clear_screen();
+
+        std::cout << num1 << " " << operation << " (type in another number) ";
+
         get_number(&num2);
         num_temp = num1;
         get_result(&num1, &num2, operation);
+
+        clear_screen();
+
         std::cout << num_temp << " " << operation << " " << num2 << " = " << num1 << std::endl;
 
-        std::cout << "Do you want to continue? [y/n]" << std::endl;
+        std::cout << "Wanna continue? [y/n]" << std::endl;
         std::cin >> cont;
-        clear_screen();
-    }
+        get_continue(&cont);
 
+        if (cont == 'n') {
+            break;
+        }
+
+        clear_screen();
+    } while (cont);
+
+    clear_screen();
     std::cout << "Thank you for using this calculator!" << std::endl;
     return 0;
 }
@@ -73,8 +68,6 @@ double get_number(double *num) {
 }
 
 char get_operation(char *operation) {
-    // to minimize code verbosity and portability, i made the operation reader a function
-    // that way i can reuse it and add case exceptions without adding to the verbosity of the code itself
 
     do {
         std::cin.clear();
@@ -101,7 +94,7 @@ char get_operation(char *operation) {
 double get_result(double *num1, double *num2, const char operation) {
 
 
-    // i'm reusing the num1 as the result to avoid creating another unecessary variable
+    // i'm reusing the num1 as the result of the operation
     switch (operation) {
 
         // 43 equals to '+'
@@ -131,11 +124,11 @@ double get_result(double *num1, double *num2, const char operation) {
             }
 
             // if the user tries to divide anything by 0, it will ask for the second number again
-            do {
-                std::cout << "You cant divide by zero!" << std::endl;
+            while (*num2 == 0) {
+                std::cout << "You can't divide by zero!" << std::endl;
                 std::cout << "Please type in the second number again: ";
                 get_number(num2);
-            } while (*num2 == 0);
+            }
 
             *num1 = *num1 / *num2;
             return *num1;
@@ -168,6 +161,7 @@ bool get_continue(char *cont) {
 
         default: {
             short i = 0;
+
             do {
                     std::cout << "Invalid option. Please try again! [y/n]" << std::endl;
 
